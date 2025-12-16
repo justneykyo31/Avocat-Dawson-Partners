@@ -2,47 +2,54 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Cabinet Avocats RP – Gestion complète</title>
+<title>Cabinet RP – Gestion Avocats</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-body{background:#1e1e1e;font-family:Arial;color:#eee;padding:20px}
-h1,h2{color:#d4af6a;text-align:center}
-nav{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-nav button{width:auto;padding:10px 20px}
-.card{background:#2a2a2a;border-radius:12px;padding:20px;margin-bottom:20px}
+:root{--bg:#0f1115;--card:#171a21;--accent:#c9a458;--text:#eaeaea;--muted:#9aa0a6;--radius:14px}
+*{box-sizing:border-box;font-family:'Inter',sans-serif}
+body{margin:0;background:var(--bg);color:var(--text)}
+header{padding:20px;text-align:center;font-size:26px;font-weight:700;color:var(--accent)}
+nav{display:flex;justify-content:center;gap:15px;background:#12141a;padding:15px;position:sticky;top:0}
+nav button{background:none;border:1px solid #2a2e3a;color:var(--text);padding:10px 18px;border-radius:var(--radius);cursor:pointer;font-weight:600}
+nav button.active,nav button:hover{background:var(--accent);color:#000}
+.container{max-width:1100px;margin:auto;padding:25px}
+.card{background:var(--card);border-radius:var(--radius);padding:25px;margin-bottom:25px;box-shadow:0 0 0 1px #20232d}
 .hidden{display:none}
-input,select,button{padding:10px;border-radius:8px;border:none}
-input,select{background:#3a3a3a;color:white}
-button{background:#c9a458;font-weight:bold;cursor:pointer}
+input,select{width:100%;padding:14px;margin-bottom:12px;border-radius:10px;border:none;background:#0f1115;color:var(--text)}
+button.main{width:100%;background:var(--accent);color:#000;border:none;padding:14px;border-radius:12px;font-weight:700;cursor:pointer}
 table{width:100%;border-collapse:collapse;margin-top:15px}
-th,td{border-bottom:1px solid #444;padding:8px;text-align:center}
-th{color:#d4af6a}
-.statbox{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.stat{background:#262626;padding:15px;border-radius:10px;text-align:center}
+th,td{padding:12px;border-bottom:1px solid #252a36;text-align:center}
+th{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.stat{background:#12141a;padding:20px;border-radius:var(--radius);text-align:center}
+.stat span{font-size:22px;font-weight:700;display:block;margin-top:8px}
 .green{color:#4caf50}
-.red{color:#f44336}
 </style>
 </head>
 <body>
+<header>⚖️ Cabinet d'Avocats RP</header>
 
-<h1>⚖️ Cabinet d'Avocats RP</h1>
-
-<div class="card" id="login">
-<h2>Connexion / Création</h2>
+<div class="container" id="login">
+<div class="card">
+<h2>Connexion</h2>
 <input id="name" placeholder="Nom RP">
 <select id="grade"></select>
-<button onclick="loginUser()">Entrer</button>
+<button class="main" onclick="login()">Entrer</button>
+</div>
 </div>
 
-<nav class="hidden" id="menu">
-<button onclick="show('effectif')">Effectif</button>
-<button onclick="show('commis')">Commis d'office</button>
-<button onclick="show('factures')">Factures clients</button>
-<button onclick="show('recap')">Récapitulatif</button>
+<nav id="menu" class="hidden">
+<button id="btn-effectif" onclick="showPage('effectif')">Effectif</button>
+<button id="btn-commis" onclick="showPage('commis')">Commis</button>
+<button id="btn-factures" onclick="showPage('factures')">Factures</button>
+<button id="btn-recap" onclick="showPage('recap')">Récap</button>
 </nav>
+
+<div class="container hidden" id="app">
 
 <div class="card hidden" id="effectif">
 <h2>👥 Effectif</h2>
-<table><thead><tr><th>Nom</th><th>Grade</th><th>%</th><th>Prime fixe</th></tr></thead><tbody id="staff"></tbody></table>
+<table><thead><tr><th>Nom</th><th>Grade</th><th>Part</th><th>Prime</th></tr></thead><tbody id="staff"></tbody></table>
 </div>
 
 <div class="card hidden" id="commis">
@@ -50,81 +57,40 @@ th{color:#d4af6a}
 <input id="c_client" placeholder="Client">
 <input id="c_charges" placeholder="Charges">
 <input id="c_amende" type="number" placeholder="Amende">
-<select id="c_proces"><option>Oui</option><option>Non</option></select>
-<select id="c_accord"><option>Oui</option><option>Non</option></select>
-<button onclick="addCommis()">Ajouter</button>
-<table><thead><tr><th>Client</th><th>Charges</th><th>Amende</th><th>Part</th></tr></thead><tbody id="commisTable"></tbody></table>
+<button class="main" onclick="addCommis()">Ajouter dossier</button>
+<table><thead><tr><th>Client</th><th>Charges</th><th>Amende</th><th>Votre part</th></tr></thead><tbody id="commisTable"></tbody></table>
 </div>
 
 <div class="card hidden" id="factures">
-<h2>🧾 Factures clients</h2>
-<input id="f_client" placeholder="Client">
+<h2>🧾 Factures</h2>
 <input id="f_montant" type="number" placeholder="Montant">
-<button onclick="addFacture()">Ajouter facture</button>
-<table><thead><tr><th>Client</th><th>Montant</th></tr></thead><tbody id="factTable"></tbody></table>
+<button class="main" onclick="addFacture()">Ajouter facture</button>
+<table><thead><tr><th>Montant</th></tr></thead><tbody id="factTable"></tbody></table>
 </div>
 
 <div class="card hidden" id="recap">
 <h2>📊 Récapitulatif</h2>
-<div class="statbox">
-<div class="stat">Revenus commis<br><span id="r_commis">0 $</span></div>
-<div class="stat">Revenus factures<br><span id="r_fact">0 $</span></div>
-<div class="stat">Dépenses<br><span class="red" id="r_dep">0 $</span></div>
-<div class="stat">Salaire total<br><span id="r_sal">0 $</span></div>
-<div class="stat">Bénéfice brut<br><span class="green" id="r_benef">0 $</span></div>
+<div class="stats">
+<div class="stat">Revenus commis<span id="r_commis">0 $</span></div>
+<div class="stat">Revenus factures<span id="r_fact">0 $</span></div>
+<div class="stat">Salaire total<span id="r_sal">0 $</span></div>
+<div class="stat">Bénéfice<span class="green" id="r_benef">0 $</span></div>
+</div>
 </div>
 </div>
 
 <script>
-const grades={
-"Président - Partenaire Principal":{pct:0.75,prime:1000000},
-"Partenaire Directeur":{pct:0.65,prime:750000},
-"Partenaire Sénior":{pct:0.6,prime:500000},
-"Partenaire":{pct:0.55,prime:450000},
-"Partenaire Junior":{pct:0.5,prime:400000},
-"Avocat Sénior":{pct:0.4,prime:300000},
-"Avocat":{pct:0.35,prime:300000},
-"Avocat Junior":{pct:0.3,prime:300000},
-"Parajuriste":{pct:0,prime:200000},
-"Assistant Juridique":{pct:0,prime:350000}
-};
-
-Object.keys(grades).forEach(g=>{
-const o=document.createElement('option');o.textContent=g;grade.appendChild(o);
-});
-
-let user=null;
-let commis=JSON.parse(localStorage.getItem('commis')||'[]');
-let factures=JSON.parse(localStorage.getItem('factures')||'[]');
-
-function loginUser(){
-user={name:name.value,grade:grade.value};
-document.getElementById('login').classList.add('hidden');
-document.getElementById('menu').classList.remove('hidden');
-show('effectif');renderAll();}
-
-function show(id){['effectif','commis','factures','recap'].forEach(d=>document.getElementById(d).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
-
-function renderAll(){
-staff.innerHTML=`<tr><td>${user.name}</td><td>${user.grade}</td><td>${grades[user.grade].pct*100}%</td><td>${grades[user.grade].prime.toLocaleString()} $</td></tr>`;
-renderCommis();renderFact();renderRecap();}
-
-function addCommis(){const a=+c_amende.value;commis.push({a});localStorage.setItem('commis',JSON.stringify(commis));renderCommis();}
-function renderCommis(){commisTable.innerHTML='';let total=0;commis.forEach(c=>{const part=c.a*grades[user.grade].pct;total+=part;commisTable.innerHTML+=`<tr><td>-</td><td>-</td><td>${c.a}$</td><td>${part.toFixed(0)}$</td></tr>`});}
-
-function addFacture(){const m=+f_montant.value;factures.push(m);localStorage.setItem('factures',JSON.stringify(factures));renderFact();}
-function renderFact(){factTable.innerHTML='';factures.forEach(f=>factTable.innerHTML+=`<tr><td>-</td><td>${f}$</td></tr>`);}
-
-function renderRecap(){
-const rc=commis.reduce((s,c)=>s+c.a*grades[user.grade].pct,0);
-const rf=factures.reduce((a,b)=>a+b,0);
-r_commis.textContent=rc.toLocaleString()+" $";
-r_fact.textContent=rf.toLocaleString()+" $";
-r_dep.textContent='0 $';
-r_sal.textContent=(rc+rf).toLocaleString()+" $";
-r_benef.textContent=(rc+rf).toLocaleString()+" $";
-}
+const grades={"Président":{pct:.75,prime:1000000},"Partenaire":{pct:.55,prime:450000},"Avocat":{pct:.35,prime:300000},"Commis":{pct:.25,prime:200000}};
+Object.keys(grades).forEach(g=>grade.innerHTML+=`<option>${g}</option>`);
+let user=null,commis=[],factures=[];
+function login(){user={name:name.value,grade:grade.value};login.classList.add('hidden');menu.classList.remove('hidden');app.classList.remove('hidden');showPage('effectif');render();}
+function showPage(p){['effectif','commis','factures','recap'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById(p).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+p).classList.add('active');}
+function render(){staff.innerHTML=`<tr><td>${user.name}</td><td>${user.grade}</td><td>${grades[user.grade].pct*100}%</td><td>${grades[user.grade].prime.toLocaleString()} $</td></tr>`;}
+function addCommis(){commis.push(+c_amende.value);renderCommis();}
+function renderCommis(){commisTable.innerHTML='';commis.forEach(a=>{const part=a*grades[user.grade].pct;commisTable.innerHTML+=`<tr><td>-</td><td>-</td><td>${a}$</td><td>${part.toFixed(0)}$</td></tr>`});renderRecap();}
+function addFacture(){factures.push(+f_montant.value);renderFact();}
+function renderFact(){factTable.innerHTML='';factures.forEach(f=>factTable.innerHTML+=`<tr><td>${f}$</td></tr>`);renderRecap();}
+function renderRecap(){const rc=commis.reduce((s,a)=>s+a*grades[user.grade].pct,0);const rf=factures.reduce((a,b)=>a+b,0);r_commis.textContent=rc+' $';r_fact.textContent=rf+' $';r_sal.textContent=(rc+rf)+' $';r_benef.textContent=(rc+rf)+' $';}
 </script>
-
 </body>
 </html>
