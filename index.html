@@ -57,4 +57,104 @@
 </script>
 
 </body>
+<!DOCTYPE html>
+</div>
+
+
+<div class="card hidden" id="dashboard">
+<h2 id="welcome"></h2>
+
+
+<h3>Ajouter un dossier (commis)</h3>
+<input id="client" placeholder="Nom du client">
+<input id="charges" placeholder="Charges">
+<input id="amende" type="number" placeholder="Amende ($)">
+<button onclick="addCase()">Enregistrer</button>
+
+
+<table>
+<thead>
+<tr><th>Client</th><th>Charges</th><th>Amende</th><th>Votre part</th></tr>
+</thead>
+<tbody id="cases"></tbody>
+</table>
+
+
+<div class="stats">
+<div class="stat">Gain total<br><span class="green" id="gain">0 $</span></div>
+<div class="stat">Total amendes<br><span id="total">0 $</span></div>
+<div class="stat">Prime grade<br><span id="prime">0 $</span></div>
+</div>
+</div>
+
+
+<script>
+const grades = {
+"Président - Partenaire Principal": {pct:0.75, prime:1000000},
+"Partenaire Directeur": {pct:0.65, prime:750000},
+"Partenaire Sénior": {pct:0.6, prime:500000},
+"Partenaire": {pct:0.55, prime:450000},
+"Partenaire Junior": {pct:0.5, prime:400000},
+"Avocat Sénior": {pct:0.4, prime:300000},
+"Avocat": {pct:0.35, prime:300000},
+"Avocat Junior": {pct:0.3, prime:300000},
+"Parajuriste": {pct:0, prime:200000},
+"Assistant Juridique": {pct:0, prime:350000}
+};
+
+
+const gradeSelect = document.getElementById('regGrade');
+Object.keys(grades).forEach(g=>{
+const o=document.createElement('option');o.textContent=g;gradeSelect.appendChild(o);
+});
+
+
+let user = JSON.parse(localStorage.getItem('user'));
+let cases = JSON.parse(localStorage.getItem('cases')) || [];
+
+
+if(user) login();
+
+
+function register(){
+user={name:regName.value, grade:regGrade.value};
+localStorage.setItem('user',JSON.stringify(user));
+login();
+}
+
+
+function login(){
+document.getElementById('register').classList.add('hidden');
+document.getElementById('dashboard').classList.remove('hidden');
+document.getElementById('welcome').textContent=`Bienvenue ${user.name} (${user.grade})`;
+document.getElementById('prime').textContent=grades[user.grade].prime.toLocaleString()+" $";
+render();
+}
+
+
+function addCase(){
+const a=Number(document.getElementById('amende').value);
+cases.push({client:client.value,charges:charges.value,amende:a});
+localStorage.setItem('cases',JSON.stringify(cases));
+render();
+}
+
+
+function render(){
+const body=document.getElementById('cases');
+body.innerHTML='';
+let total=0,gain=0;
+cases.forEach(c=>{
+total+=c.amende;
+const part=c.amende*grades[user.grade].pct;
+gain+=part;
+body.innerHTML+=`<tr><td>${c.client}</td><td>${c.charges}</td><td>${c.amende}$</td><td>${part.toFixed(0)}$</td></tr>`;
+});
+document.getElementById('total').textContent=total.toLocaleString()+" $";
+document.getElementById('gain').textContent=gain.toLocaleString()+" $";
+}
+</script>
+
+
+</body>
 </html>
