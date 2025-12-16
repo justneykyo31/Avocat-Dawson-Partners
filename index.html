@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Cabinet Dawson & Partners</title>
+  <style>
+    body { font-family: Arial; background:#f2f2f2; padding:20px; }
+    .box { background:white; padding:20px; max-width:600px; margin:auto; border-radius:10px; }
+    input, select, button { width:100%; padding:10px; margin-top:10px; }
+    button { background:#222; color:white; border:none; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h1>⚖️ Admin – Cabinet RP</h1>
+
+  <h3>Créer un compte</h3>
+  <input id="nom" placeholder="Nom" />
+  <select id="role">
+    <option>Commis</option>
+    <option>Avocat</option>
+    <option>Admin</option>
+  </select>
+  <button onclick="addUser()">Créer</button>
+
+  <h3>Effectif</h3>
+  <ul id="list"></ul>
+</div>
+
+<script>
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+
+  function addUser() {
+    const nom = document.getElementById('nom').value;
+    const role = document.getElementById('role').value;
+    if (!nom) return;
+
+    users.push({ nom, role });
+    localStorage.setItem('users', JSON.stringify(users));
+    document.getElementById('nom').value = '';
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    list.innerHTML = '';
+    users.forEach(u => {
+      const li = document.createElement('li');
+      li.textContent = u.nom + ' – ' + u.role;
+      list.appendChild(li);
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>
