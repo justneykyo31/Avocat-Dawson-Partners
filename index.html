@@ -1,160 +1,130 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Cabinet Dawson & Partners</title>
-  <style>
-    body { font-family: Arial; background:#f2f2f2; padding:20px; }
-    .box { background:white; padding:20px; max-width:600px; margin:auto; border-radius:10px; }
-    input, select, button { width:100%; padding:10px; margin-top:10px; }
-    button { background:#222; color:white; border:none; cursor:pointer; }
-  </style>
+<meta charset="UTF-8">
+<title>Cabinet Avocats RP – Gestion complète</title>
+<style>
+body{background:#1e1e1e;font-family:Arial;color:#eee;padding:20px}
+h1,h2{color:#d4af6a;text-align:center}
+nav{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+nav button{width:auto;padding:10px 20px}
+.card{background:#2a2a2a;border-radius:12px;padding:20px;margin-bottom:20px}
+.hidden{display:none}
+input,select,button{padding:10px;border-radius:8px;border:none}
+input,select{background:#3a3a3a;color:white}
+button{background:#c9a458;font-weight:bold;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border-bottom:1px solid #444;padding:8px;text-align:center}
+th{color:#d4af6a}
+.statbox{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.stat{background:#262626;padding:15px;border-radius:10px;text-align:center}
+.green{color:#4caf50}
+.red{color:#f44336}
+</style>
 </head>
 <body>
 
-<div class="box">
-  <h1>⚖️ Admin – Cabinet RP</h1>
+<h1>⚖️ Cabinet d'Avocats RP</h1>
 
-  <h3>Créer un compte</h3>
-  <input id="nom" placeholder="Nom" />
-  <select id="role">
-    <option>Commis</option>
-    <option>Avocat</option>
-    <option>Admin</option>
-  </select>
-  <button onclick="addUser()">Créer</button>
+<div class="card" id="login">
+<h2>Connexion / Création</h2>
+<input id="name" placeholder="Nom RP">
+<select id="grade"></select>
+<button onclick="loginUser()">Entrer</button>
+</div>
 
-  <h3>Effectif</h3>
-  <ul id="list"></ul>
+<nav class="hidden" id="menu">
+<button onclick="show('effectif')">Effectif</button>
+<button onclick="show('commis')">Commis d'office</button>
+<button onclick="show('factures')">Factures clients</button>
+<button onclick="show('recap')">Récapitulatif</button>
+</nav>
+
+<div class="card hidden" id="effectif">
+<h2>👥 Effectif</h2>
+<table><thead><tr><th>Nom</th><th>Grade</th><th>%</th><th>Prime fixe</th></tr></thead><tbody id="staff"></tbody></table>
+</div>
+
+<div class="card hidden" id="commis">
+<h2>📂 Commis d'office</h2>
+<input id="c_client" placeholder="Client">
+<input id="c_charges" placeholder="Charges">
+<input id="c_amende" type="number" placeholder="Amende">
+<select id="c_proces"><option>Oui</option><option>Non</option></select>
+<select id="c_accord"><option>Oui</option><option>Non</option></select>
+<button onclick="addCommis()">Ajouter</button>
+<table><thead><tr><th>Client</th><th>Charges</th><th>Amende</th><th>Part</th></tr></thead><tbody id="commisTable"></tbody></table>
+</div>
+
+<div class="card hidden" id="factures">
+<h2>🧾 Factures clients</h2>
+<input id="f_client" placeholder="Client">
+<input id="f_montant" type="number" placeholder="Montant">
+<button onclick="addFacture()">Ajouter facture</button>
+<table><thead><tr><th>Client</th><th>Montant</th></tr></thead><tbody id="factTable"></tbody></table>
+</div>
+
+<div class="card hidden" id="recap">
+<h2>📊 Récapitulatif</h2>
+<div class="statbox">
+<div class="stat">Revenus commis<br><span id="r_commis">0 $</span></div>
+<div class="stat">Revenus factures<br><span id="r_fact">0 $</span></div>
+<div class="stat">Dépenses<br><span class="red" id="r_dep">0 $</span></div>
+<div class="stat">Salaire total<br><span id="r_sal">0 $</span></div>
+<div class="stat">Bénéfice brut<br><span class="green" id="r_benef">0 $</span></div>
+</div>
 </div>
 
 <script>
-  let users = JSON.parse(localStorage.getItem('users')) || [];
-
-  function addUser() {
-    const nom = document.getElementById('nom').value;
-    const role = document.getElementById('role').value;
-    if (!nom) return;
-
-    users.push({ nom, role });
-    localStorage.setItem('users', JSON.stringify(users));
-    document.getElementById('nom').value = '';
-    render();
-  }
-
-  function render() {
-    const list = document.getElementById('list');
-    list.innerHTML = '';
-    users.forEach(u => {
-      const li = document.createElement('li');
-      li.textContent = u.nom + ' – ' + u.role;
-      list.appendChild(li);
-    });
-  }
-
-  render();
-</script>
-
-</body>
-<!DOCTYPE html>
-</div>
-
-
-<div class="card hidden" id="dashboard">
-<h2 id="welcome"></h2>
-
-
-<h3>Ajouter un dossier (commis)</h3>
-<input id="client" placeholder="Nom du client">
-<input id="charges" placeholder="Charges">
-<input id="amende" type="number" placeholder="Amende ($)">
-<button onclick="addCase()">Enregistrer</button>
-
-
-<table>
-<thead>
-<tr><th>Client</th><th>Charges</th><th>Amende</th><th>Votre part</th></tr>
-</thead>
-<tbody id="cases"></tbody>
-</table>
-
-
-<div class="stats">
-<div class="stat">Gain total<br><span class="green" id="gain">0 $</span></div>
-<div class="stat">Total amendes<br><span id="total">0 $</span></div>
-<div class="stat">Prime grade<br><span id="prime">0 $</span></div>
-</div>
-</div>
-
-
-<script>
-const grades = {
-"Président - Partenaire Principal": {pct:0.75, prime:1000000},
-"Partenaire Directeur": {pct:0.65, prime:750000},
-"Partenaire Sénior": {pct:0.6, prime:500000},
-"Partenaire": {pct:0.55, prime:450000},
-"Partenaire Junior": {pct:0.5, prime:400000},
-"Avocat Sénior": {pct:0.4, prime:300000},
-"Avocat": {pct:0.35, prime:300000},
-"Avocat Junior": {pct:0.3, prime:300000},
-"Parajuriste": {pct:0, prime:200000},
-"Assistant Juridique": {pct:0, prime:350000}
+const grades={
+"Président - Partenaire Principal":{pct:0.75,prime:1000000},
+"Partenaire Directeur":{pct:0.65,prime:750000},
+"Partenaire Sénior":{pct:0.6,prime:500000},
+"Partenaire":{pct:0.55,prime:450000},
+"Partenaire Junior":{pct:0.5,prime:400000},
+"Avocat Sénior":{pct:0.4,prime:300000},
+"Avocat":{pct:0.35,prime:300000},
+"Avocat Junior":{pct:0.3,prime:300000},
+"Parajuriste":{pct:0,prime:200000},
+"Assistant Juridique":{pct:0,prime:350000}
 };
 
-
-const gradeSelect = document.getElementById('regGrade');
 Object.keys(grades).forEach(g=>{
-const o=document.createElement('option');o.textContent=g;gradeSelect.appendChild(o);
+const o=document.createElement('option');o.textContent=g;grade.appendChild(o);
 });
 
+let user=null;
+let commis=JSON.parse(localStorage.getItem('commis')||'[]');
+let factures=JSON.parse(localStorage.getItem('factures')||'[]');
 
-let user = JSON.parse(localStorage.getItem('user'));
-let cases = JSON.parse(localStorage.getItem('cases')) || [];
+function loginUser(){
+user={name:name.value,grade:grade.value};
+document.getElementById('login').classList.add('hidden');
+document.getElementById('menu').classList.remove('hidden');
+show('effectif');renderAll();}
 
+function show(id){['effectif','commis','factures','recap'].forEach(d=>document.getElementById(d).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
 
-if(user) login();
+function renderAll(){
+staff.innerHTML=`<tr><td>${user.name}</td><td>${user.grade}</td><td>${grades[user.grade].pct*100}%</td><td>${grades[user.grade].prime.toLocaleString()} $</td></tr>`;
+renderCommis();renderFact();renderRecap();}
 
+function addCommis(){const a=+c_amende.value;commis.push({a});localStorage.setItem('commis',JSON.stringify(commis));renderCommis();}
+function renderCommis(){commisTable.innerHTML='';let total=0;commis.forEach(c=>{const part=c.a*grades[user.grade].pct;total+=part;commisTable.innerHTML+=`<tr><td>-</td><td>-</td><td>${c.a}$</td><td>${part.toFixed(0)}$</td></tr>`});}
 
-function register(){
-user={name:regName.value, grade:regGrade.value};
-localStorage.setItem('user',JSON.stringify(user));
-login();
-}
+function addFacture(){const m=+f_montant.value;factures.push(m);localStorage.setItem('factures',JSON.stringify(factures));renderFact();}
+function renderFact(){factTable.innerHTML='';factures.forEach(f=>factTable.innerHTML+=`<tr><td>-</td><td>${f}$</td></tr>`);}
 
-
-function login(){
-document.getElementById('register').classList.add('hidden');
-document.getElementById('dashboard').classList.remove('hidden');
-document.getElementById('welcome').textContent=`Bienvenue ${user.name} (${user.grade})`;
-document.getElementById('prime').textContent=grades[user.grade].prime.toLocaleString()+" $";
-render();
-}
-
-
-function addCase(){
-const a=Number(document.getElementById('amende').value);
-cases.push({client:client.value,charges:charges.value,amende:a});
-localStorage.setItem('cases',JSON.stringify(cases));
-render();
-}
-
-
-function render(){
-const body=document.getElementById('cases');
-body.innerHTML='';
-let total=0,gain=0;
-cases.forEach(c=>{
-total+=c.amende;
-const part=c.amende*grades[user.grade].pct;
-gain+=part;
-body.innerHTML+=`<tr><td>${c.client}</td><td>${c.charges}</td><td>${c.amende}$</td><td>${part.toFixed(0)}$</td></tr>`;
-});
-document.getElementById('total').textContent=total.toLocaleString()+" $";
-document.getElementById('gain').textContent=gain.toLocaleString()+" $";
+function renderRecap(){
+const rc=commis.reduce((s,c)=>s+c.a*grades[user.grade].pct,0);
+const rf=factures.reduce((a,b)=>a+b,0);
+r_commis.textContent=rc.toLocaleString()+" $";
+r_fact.textContent=rf.toLocaleString()+" $";
+r_dep.textContent='0 $';
+r_sal.textContent=(rc+rf).toLocaleString()+" $";
+r_benef.textContent=(rc+rf).toLocaleString()+" $";
 }
 </script>
-
 
 </body>
 </html>
